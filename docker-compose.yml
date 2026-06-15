@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    container_name: kak-privezli-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    networks:
+      - kak-privezli
+
+  nginx:
+    image: nginx:alpine
+    container_name: kak-privezli-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - mongodb
+    networks:
+      - kak-privezli
+
+volumes:
+  mongodb_data:
+
+networks:
+  kak-privezli:
+    driver: bridge
